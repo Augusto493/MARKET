@@ -7,7 +7,38 @@
 - MySQL/MariaDB disponível
 - Composer disponível (via SSH)
 
-## Passos de Deploy
+## Deploy via Git (recomendado)
+
+Se você já configurou o repositório no painel da Hostinger (GIT → repositório `git@github.com:Augusto493/MARKET.git`, branch `main`, diretório `public_html`):
+
+1. **Push do código** (no seu PC):
+   ```bash
+   git add .
+   git commit -m "sua mensagem"
+   git push origin main
+   ```
+
+2. **No painel Hostinger**: clique em **Implantar** (Deploy).
+
+3. **Após o primeiro deploy**, conecte por SSH e execute (substitua pelo seu caminho):
+   ```bash
+   cd ~/domains/hospedavoce.online/public_html
+   composer install --no-dev --optimize-autoloader
+   npm run build
+   php artisan key:generate
+   # Edite .env com banco e APP_URL (veja seção 2 abaixo)
+   php artisan migrate --force
+   chmod -R 755 storage bootstrap/cache
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   ```
+
+O projeto inclui um **`.htaccess` na raiz** que redireciona todas as requisições para a pasta `public`, para funcionar quando a raiz do site é `public_html` (repositório clonado na raiz).
+
+---
+
+## Passos de Deploy (upload manual)
 
 ### 1. Upload dos Arquivos
 
@@ -28,23 +59,29 @@ npm run build
 
 ### 2. Configuração do .env
 
-Crie o arquivo `.env` na raiz do projeto com:
+Crie o arquivo `.env` na raiz do projeto (em `public_html`) com:
 
 ```env
 APP_NAME="HospedaBC Marketplace"
 APP_ENV=production
-APP_KEY=base64:... (gere com php artisan key:generate)
+APP_KEY=base64:... (gere com: php artisan key:generate)
 APP_DEBUG=false
-APP_URL=https://seudominio.com.br
+APP_URL=https://hospedavoce.online
 
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=seu_banco
-DB_USERNAME=seu_usuario
+DB_DATABASE=seu_banco_hostinger
+DB_USERNAME=seu_usuario_hostinger
 DB_PASSWORD=sua_senha
 
-# ... outras configurações
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+
+# Stays (produção)
+STAYS_ADAPTER=http
+# ... demais variáveis do .env.example
 ```
 
 ### 3. Permissões
