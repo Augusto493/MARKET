@@ -20,19 +20,20 @@ Se você já configurou o repositório no painel da Hostinger (GIT → repositó
 
 2. **No painel Hostinger**: clique em **Implantar** (Deploy).
 
-3. **Após o primeiro deploy**, conecte por SSH e execute (substitua pelo seu caminho):
+3. **Após o primeiro deploy**, conecte por SSH e execute (ou use o arquivo `COMANDOS_APOS_DEPLOY.txt` na raiz do projeto):
    ```bash
    cd ~/domains/hospedavoce.online/public_html
+   cp .env.example .env
+   # Edite .env (APP_URL, DB_*) no File Manager ou: nano .env
    composer install --no-dev --optimize-autoloader
-   npm run build
    php artisan key:generate
-   # Edite .env com banco e APP_URL (veja seção 2 abaixo)
    php artisan migrate --force
    chmod -R 755 storage bootstrap/cache
    php artisan config:cache
    php artisan route:cache
    php artisan view:cache
    ```
+   O **build do front (Vite)** já vem no repositório; não é necessário rodar `npm` no servidor.
 
 O projeto inclui um **`.htaccess` na raiz** que redireciona todas as requisições para a pasta `public`, para funcionar quando a raiz do site é `public_html` (repositório clonado na raiz).
 

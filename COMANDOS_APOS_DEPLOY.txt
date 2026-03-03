@@ -1,0 +1,27 @@
+# Comandos para rodar no SSH da Hostinger após o Deploy (Git)
+
+# 1. Ir para a pasta do site
+cd ~/domains/hospedavoce.online/public_html
+
+# 2. Se ainda não existir .env, copiar do exemplo e editar (APP_URL, DB_*)
+cp .env.example .env
+# Edite .env no painel (File Manager) ou: nano .env
+
+# 3. Instalar dependências PHP (produção)
+composer install --no-dev --optimize-autoloader
+
+# 4. Gerar chave da aplicação
+php artisan key:generate
+
+# 5. Migrations (primeira vez ou após alterações)
+php artisan migrate --force
+
+# 6. Permissões
+chmod -R 755 storage bootstrap/cache
+
+# 7. Cache de config, rotas e views
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# O build do front (Vite) já vem no repositório - não precisa rodar npm no servidor.
